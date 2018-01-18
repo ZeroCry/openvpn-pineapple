@@ -1,0 +1,10 @@
+{
+    "author": "Vay3t",
+    "description": "Interface to easily connect to openvpn server using ovpn files",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "title": "openvpn",
+    "version": "1.0"
+}
