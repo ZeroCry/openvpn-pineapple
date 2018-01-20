@@ -11,6 +11,6 @@ if [ "$1" = "start" ]; then
 	eval ${MYCMD}
 	rm -rf /tmp/openvpn.run
 elif [ "$1" = "stop" ]; then
-  killall openvpn-openssl
+  killall openvpn
 	rm -rf /tmp/openvpn.run
 fi
