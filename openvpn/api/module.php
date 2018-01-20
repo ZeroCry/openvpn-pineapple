@@ -26,7 +26,7 @@ class openvpn extends Module
     
         protected function checkDependency($dependencyName)
         {
-                return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("openvpn.module.installed")));
+            return ((exec("which {$dependencyName}") == '' ? false : true) && ($this->uciGet("openvpn.module.installed")));
         }
 
         protected function getDevice()
@@ -71,51 +71,51 @@ class openvpn extends Module
     private function refreshStatus()
     {
         if (!file_exists('/tmp/openvpn.progress'))
-			{
-				if (!$this->checkDependency("openvpn"))
-				{
-					$installed = false;
-					$install = "Not installed";
-					$installLabel = "danger";
-					$processing = false;
+        {
+            if (!$this->checkDependency("openvpn"))
+            {
+                $installed = false;
+                $install = "Not installed";
+                $installLabel = "danger";
+                $processing = false;
 
-					$status = "Start";
-					$statusLabel = "success";
-				}
-				else
-				{
-					$installed = true;
-					$install = "Installed";
-					$installLabel = "success";
-					$processing = false;
-
-					if ($this->checkRunning("openvpn"))
-					{
-						$status = "Stop";
-						$statusLabel = "danger";
-					}
-					else
-					{
-						$status = "Start";
-						$statusLabel = "success";
-					}
-				}
-        }
-			else
-			{
-				$installed = false;
-				$install = "Installing...";
-				$installLabel = "warning";
-				$processing = true;
-
-				$status = "Start";
-				$statusLabel = "success";
+                $status = "Start";
+                $statusLabel = "success";
             }
+            else
+            {
+                $installed = true;
+                $install = "Installed";
+                $installLabel = "success";
+                $processing = false;
 
-			$device = $this->getDevice();
-			$sdAvailable = $this->isSDAvailable();
+                if ($this->checkRunning("openvpn"))
+                {
+                    $status = "Stop";
+                    $statusLabel = "danger";
+                }
+                else
+                {
+                    $status = "Start";
+                    $statusLabel = "success";
+                }
+            }
+        }
+        else
+        {
+            $installed = false;
+            $install = "Installing...";
+            $installLabel = "warning";
+            $processing = true;
 
-			$this->response = array("device" => $device, "sdAvailable" => $sdAvailable, "status" => $status, "statusLabel" => $statusLabel, "installed" => $installed, "install" => $install, "installLabel" => $installLabel, "processing" => $processing);
+            $status = "Start";
+            $statusLabel = "success";
+        }
+
+        $device = $this->getDevice();
+        $sdAvailable = $this->isSDAvailable();
+
+        $this->response = array("device" => $device, "sdAvailable" => $sdAvailable, "status" => $status, "statusLabel" => $statusLabel, "installed" => $installed, "install" => $install, "installLabel" => $installLabel, "processing" => $processing);
 	}    
   
 }

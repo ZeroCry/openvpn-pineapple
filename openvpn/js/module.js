@@ -100,7 +100,7 @@ registerController('openvpn_ControlsController', ['$api', '$scope', '$rootScope'
 		$api.request({
             module: 'openvpn',
             action: 'handleDependencies',
-						destination: param
+            destination: param
         }, function(response){
             if (response.success === true) {
 				$scope.installLabel = "warning";
