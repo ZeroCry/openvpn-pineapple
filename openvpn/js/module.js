@@ -144,12 +144,12 @@ registerController('openvpn_ConfigurationController', ['$api', '$scope', '$timeo
 			configurationData: $scope.configurationData
 		}, function(response) {
             $scope.saveConfigurationLabel = "success";
-						$scope.saveConfiguration = "Saved";
+            $scope.saveConfiguration = "Saved";
 
             $timeout(function(){
                 $scope.saveConfigurationLabel = "primary";
-								$scope.saveConfiguration = "Save";
-								$scope.saving = false;
+                $scope.saveConfiguration = "Save";
+                $scope.saving = false;
             }, 2000);
 		});
 	});

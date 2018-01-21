@@ -1,4 +1,5 @@
 <?php namespace pineapple;
+
 putenv('LD_LIBRARY_PATH='.getenv('LD_LIBRARY_PATH').':/sd/lib:/sd/usr/lib');
 putenv('PATH='.getenv('PATH').':/sd/usr/bin:/sd/usr/sbin');
 
@@ -19,7 +20,16 @@ class openvpn extends Module
                 break;
             case 'handleDependenciesStatus':
                 $this->handleDependenciesStatus();
-                break;    
+                break;
+            case 'toggleopenvpn':
+                $this->toggleopenvpn();
+                break;
+            case 'saveConfigurationData':
+                $this->saveConfigurationData();
+                break;
+            case 'getConfigurationData':
+                $this->getConfigurationData();
+                break;
         }
     }
     
@@ -143,7 +153,3 @@ class openvpn extends Module
     }
   
 }
-
-
-
-
