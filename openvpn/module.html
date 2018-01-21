@@ -72,17 +72,20 @@
 
         </div>
 
-        <div class="col-sm-4 col-xs-12">
+        <div class="col-sm-12 col-xs-12">
             <div class="panel panel-default">
 
                 <div class="panel-heading">
                     <h3 class="panel-title">
-                        Credentials
+                        Interface
                     </h3>
                 </div>
 
                 <div class="panel-body">
-                    ip: 8.8.8.8 US
+                    Interface: Tun1<br>
+                    Local IP: 10.0.10.2<br>
+                    Gateway: 10.0.10.1<br>
+                    Public IP: 8.8.8.8
                 </div>
             </div>
         </div>
@@ -111,7 +114,18 @@
                         <div class="hidden-xs">
                             <div class="col-md-2" style="margin-top: 1.8em;">
                                 <button type="submit" class="btn btn-primary btn-block" ng-disabled="saving" ng-click="saveConfigurationCreds()">Save</button>
+
+
+
+
                             </div>
+                                 <div class="pull-right">
+                                    Need credentials?
+                                    <div class="btn-group">
+                                        <button ng-click="toggleAutoRefresh()" class="btn btn-xs btn-{{refreshLabelON}}">ON</button>
+                                        <button ng-click="toggleAutoRefresh()" class="btn btn-xs btn-{{refreshLabelOFF}}">OFF</button>
+                                    </div>
+                                </div>
                         </div>
                     </div>
 
