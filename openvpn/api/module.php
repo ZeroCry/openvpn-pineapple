@@ -30,6 +30,18 @@ class openvpn extends Module
             case 'getConfigurationData':
                 $this->getConfigurationData();
                 break;
+            case 'saveConfigurationCreds':
+                $this->saveConfigurationData();
+                break;
+            case 'getConfigurationCreds':
+                $this->getConfigurationData();
+                break;
+            case 'toggleopenvpnOnBoot':
+                $this->toggleopenvpnOnBoot();
+                break;
+            case 'refreshOutput':
+                $this->refreshOutput();
+                break;
         }
     }
     
@@ -81,51 +93,82 @@ class openvpn extends Module
     private function refreshStatus()
     {
         if (!file_exists('/tmp/openvpn.progress'))
-        {
-            if (!$this->checkDependency("openvpn"))
-            {
-                $installed = false;
-                $install = "Not installed";
-                $installLabel = "danger";
-                $processing = false;
+		{
+			if (!$this->checkDependency("openvpn"))
+			{
+				$installed = false;
+				$install = "Not installed";
+				$installLabel = "danger";
+				$processing = false;
 
-                $status = "Start";
-                $statusLabel = "success";
-            }
-            else
-            {
-                $installed = true;
-                $install = "Installed";
-                $installLabel = "success";
-                $processing = false;
+				$status = "Start";
+				$statusLabel = "success";
 
-                if ($this->checkRunning("openvpn"))
-                {
-                    $status = "Stop";
-                    $statusLabel = "danger";
-                }
-                else
-                {
-                    $status = "Start";
-                    $statusLabel = "success";
-                }
-            }
+				$bootLabelON = "default";
+				$bootLabelOFF = "danger";
+			}
+			else
+			{
+				$installed = true;
+				$install = "Installed";
+				$installLabel = "success";
+				$processing = false;
+
+				if($this->checkRunning("openvpn"))
+				{
+					$status = "Stop";
+					$statusLabel = "danger";
+				}
+				else
+				{
+					$status = "Start";
+					$statusLabel = "success";
+				}
+
+				if(exec("cat /etc/rc.local | grep openvpn/scripts/autostart_openvpn.sh") == "")
+				{
+					$bootLabelON = "default";
+					$bootLabelOFF = "danger";
+				}
+				else
+				{
+					$bootLabelON = "success";
+					$bootLabelOFF = "default";
+				}
+			}
         }
-        else
-        {
-            $installed = false;
-            $install = "Installing...";
-            $installLabel = "warning";
-            $processing = true;
+		else
+		{
+			$installed = false;
+			$install = "Installing...";
+			$installLabel = "warning";
+			$processing = true;
 
-            $status = "Start";
-            $statusLabel = "success";
-        }
+			$status = "Not running";
+			$statusLabel = "danger";
 
-        $device = $this->getDevice();
-        $sdAvailable = $this->isSDAvailable();
+			$bootLabelON = "default";
+			$bootLabelOFF = "danger";
+    }
 
-        $this->response = array("device" => $device, "sdAvailable" => $sdAvailable, "status" => $status, "statusLabel" => $statusLabel, "installed" => $installed, "install" => $install, "installLabel" => $installLabel, "processing" => $processing);
+		$device = $this->getDevice();
+		$sdAvailable = $this->isSDAvailable();
+
+		$this->response = array("device" => $device, "sdAvailable" => $sdAvailable, "status" => $status, "statusLabel" => $statusLabel, "installed" => $installed, "install" => $install, "installLabel" => $installLabel, "bootLabelON" => $bootLabelON, "bootLabelOFF" => $bootLabelOFF, "processing" => $processing);
+	}
+    
+    private function toggleopenvpnOnBoot()
+    {
+		if(exec("cat /etc/rc.local | grep openvpn/scripts/autostart_openvpn.sh") == "")
+		{
+			exec("sed -i '/exit 0/d' /etc/rc.local");
+			exec("echo /pineapple/modules/openvpn/scripts/autostart_openvpn.sh >> /etc/rc.local");
+			exec("echo exit 0 >> /etc/rc.local");
+		}
+		else
+		{
+			exec("sed -i '/openvpn\/scripts\/autostart_openvpn.sh/d' /etc/rc.local");
+		}
 	}
     
     private function toggleopenvpn()
@@ -150,6 +193,59 @@ class openvpn extends Module
     {
         $configurationData = file_get_contents('/pineapple/modules/openvpn/files/client.ovpn');
         $this->response = array("configurationData" => $configurationData);
+    }
+    
+    private function saveConfigurationCreds()
+    {
+        $filename = '/pineapple/modules/openvpn/files/creds.txt';
+        file_put_contents($filename, $this->request->configurationData);
+    }
+
+    private function getConfigurationCreds()
+    {
+        $configurationData = file_get_contents('/pineapple/modules/openvpn/files/creds.txt');
+        $this->response = array("configurationData" => $configurationData);
+    }    
+
+    private function refreshOutput()
+    {
+		if($this->checkDependency("openvpn"))
+		{
+			if ($this->checkRunning("openvpn"))
+			{
+				if(file_exists("/pineapple/modules/openvpn/connections.log"))
+				{
+					if ($this->request->filter != "")
+					{
+						$filter = $this->request->filter;
+
+						$cmd = "cat /pineapple/modules/openvpn/connections.log"." | ".$filter;
+					}
+					else
+					{
+						$cmd = "cat /pineapple/modules/openvpn/connections.log";
+					}
+
+					exec ($cmd, $output);
+					if(!empty($output))
+						$this->response = implode("\n", array_reverse($output));
+					else
+						$this->response = "Empty connections log...";
+				}
+				else
+				{
+					$this->response =  "No connections log...";
+				}
+			}
+			else
+			{
+				 $this->response = "openvpn is not running...";
+			}
+		}
+		else
+		{
+			$this->response = "openvpn is not installed...";
+		}
     }
   
 }

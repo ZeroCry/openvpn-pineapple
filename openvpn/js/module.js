@@ -28,6 +28,9 @@ registerController('openvpn_ControlsController', ['$api', '$scope', '$rootScope'
 
 	$scope.device = '';
 	$scope.sdAvailable = false;
+    
+    $scope.bootLabelON = "default";
+	$scope.bootLabelOFF = "default";
 
 	$rootScope.status = {
 		installed : false,
@@ -49,8 +52,31 @@ registerController('openvpn_ControlsController', ['$api', '$scope', '$rootScope'
 			if(response.processing) $scope.processing = true;
 			$scope.install = response.install;
 			$scope.installLabel = response.installLabel;
+            
+            $scope.bootLabelON = response.bootLabelON;
+			$scope.bootLabelOFF = response.bootLabelOFF;
         })
     });
+    
+    $scope.toggleopenvpnOnBoot = (function() {
+            if($scope.bootLabelON == "default")
+            {
+                $scope.bootLabelON = "success";
+                $scope.bootLabelOFF = "default";
+            }
+            else
+            {
+                $scope.bootLabelON = "default";
+                $scope.bootLabelOFF = "danger";
+            }
+
+            $api.request({
+                module: 'openvpn',
+                action: 'toggleopenvpnOnBoot',
+            }, function(response) {
+                $scope.refreshStatus();
+            })
+        });
 
   $scope.toggleopenvpn = (function() {
 		if($scope.status != "Stop")
@@ -121,6 +147,26 @@ registerController('openvpn_ControlsController', ['$api', '$scope', '$rootScope'
             }
         });
     });
+    
+    $scope.toggleopenvpnOnBoot = (function() {
+        if($scope.bootLabelON == "default")
+		{
+			$scope.bootLabelON = "success";
+			$scope.bootLabelOFF = "default";
+		}
+		else
+		{
+			$scope.bootLabelON = "default";
+			$scope.bootLabelOFF = "danger";
+		}
+
+		$api.request({
+            module: 'openvpn',
+            action: 'toggleopenvpnOnBoot',
+        }, function(response) {
+			$scope.refreshStatus();
+        })
+    });
 
 	$scope.refreshStatus();
 }]);
@@ -164,4 +210,96 @@ registerController('openvpn_ConfigurationController', ['$api', '$scope', '$timeo
 	});
 
 	$scope.getConfigurationData();
+}]);
+
+
+registerController('openvpn_CredentialsController', ['$api', '$scope', '$timeout', function($api, $scope, $timeout) {
+	$scope.configurationData = '';
+	$scope.saveConfigurationLabel = "primary";
+	$scope.saveConfiguration = "Save";
+	$scope.saving = false;
+
+	$scope.saveConfigurationCreds = (function() {
+		$scope.saveConfigurationLabel = "warning";
+		$scope.saveConfiguration = "Saving...";
+		$scope.saving = true;
+
+		$api.request({
+			module: 'openvpn',
+			action: 'saveConfigurationCreds',
+			configurationData: $scope.configurationData
+		}, function(response) {
+            $scope.saveConfigurationLabel = "success";
+            $scope.saveConfiguration = "Saved";
+
+            $timeout(function(){
+                $scope.saveConfigurationLabel = "primary";
+                $scope.saveConfiguration = "Save";
+                $scope.saving = false;
+            }, 2000);
+		});
+	});
+
+	$scope.getConfigurationCreds = (function() {
+		$api.request({
+			module: 'openvpn',
+			action: 'getConfigurationCreds'
+		}, function(response) {
+			$scope.configurationData = response.configurationData;
+		});
+	});
+
+	$scope.getConfigurationData();
+}]);
+
+
+registerController('openvpn_OutputController', ['$api', '$scope', '$rootScope', '$interval', function($api, $scope, $rootScope, $interval) {
+    $scope.output = 'Loading...';
+	$scope.filter = '';
+
+	$scope.refreshLabelON = "default";
+	$scope.refreshLabelOFF = "danger";
+
+    $scope.refreshOutput = (function() {
+		$api.request({
+            module: "openvpn",
+            action: "refreshOutput",
+			filter: $scope.filter
+        }, function(response) {
+            $scope.output = response;
+        })
+    });
+
+    $scope.clearFilter = (function() {
+        $scope.filter = '';
+        $scope.refreshOutput();
+    });
+
+    $scope.toggleAutoRefresh = (function() {
+        if($scope.autoRefreshInterval)
+		{
+			$interval.cancel($scope.autoRefreshInterval);
+			$scope.autoRefreshInterval = null;
+			$scope.refreshLabelON = "default";
+			$scope.refreshLabelOFF = "danger";
+		}
+		else
+		{
+			$scope.refreshLabelON = "success";
+			$scope.refreshLabelOFF = "default";
+
+			$scope.autoRefreshInterval = $interval(function(){
+				$scope.refreshOutput();
+	        }, 5000);
+		}
+    });
+
+    $scope.refreshOutput();
+
+		$rootScope.$watch('status.refreshOutput', function(param) {
+			if(param) {
+				$scope.refreshOutput();
+			}
+		});
+
 }]);
