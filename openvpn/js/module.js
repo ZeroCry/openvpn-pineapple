@@ -124,3 +124,44 @@ registerController('openvpn_ControlsController', ['$api', '$scope', '$rootScope'
 
 	$scope.refreshStatus();
 }]);
+
+
+
+registerController('openvpn_ConfigurationController', ['$api', '$scope', '$timeout', function($api, $scope, $timeout) {
+	$scope.configurationData = '';
+	$scope.saveConfigurationLabel = "primary";
+	$scope.saveConfiguration = "Save";
+	$scope.saving = false;
+
+	$scope.saveConfigurationData = (function() {
+		$scope.saveConfigurationLabel = "warning";
+		$scope.saveConfiguration = "Saving...";
+		$scope.saving = true;
+
+		$api.request({
+			module: 'openvpn',
+			action: 'saveConfigurationData',
+			configurationData: $scope.configurationData
+		}, function(response) {
+            $scope.saveConfigurationLabel = "success";
+						$scope.saveConfiguration = "Saved";
+
+            $timeout(function(){
+                $scope.saveConfigurationLabel = "primary";
+								$scope.saveConfiguration = "Save";
+								$scope.saving = false;
+            }, 2000);
+		});
+	});
+
+	$scope.getConfigurationData = (function() {
+		$api.request({
+			module: 'openvpn',
+			action: 'getConfigurationData'
+		}, function(response) {
+			$scope.configurationData = response.configurationData;
+		});
+	});
+
+	$scope.getConfigurationData();
+}]);

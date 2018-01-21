@@ -116,7 +116,31 @@ class openvpn extends Module
         $sdAvailable = $this->isSDAvailable();
 
         $this->response = array("device" => $device, "sdAvailable" => $sdAvailable, "status" => $status, "statusLabel" => $statusLabel, "installed" => $installed, "install" => $install, "installLabel" => $installLabel, "processing" => $processing);
-	}    
+	}
+    
+    private function toggleopenvpn()
+    {
+        if(!$this->checkRunning("openvpn"))
+        {
+            $this->execBackground("/pineapple/modules/openvpn/scripts/openvpn.sh start");
+        }
+        else
+        {
+            $this->execBackground("/pineapple/modules/openvpn/scripts/openvpn.sh stop");
+        }
+    }
+
+    private function saveConfigurationData()
+    {
+        $filename = '/pineapple/modules/openvpn/files/client.ovpn';
+        file_put_contents($filename, $this->request->configurationData);
+    }
+
+    private function getConfigurationData()
+    {
+        $configurationData = file_get_contents('/pineapple/modules/openvpn/files/client.ovpn');
+        $this->response = array("configurationData" => $configurationData);
+    }
   
 }
 

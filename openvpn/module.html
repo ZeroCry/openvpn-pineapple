@@ -13,8 +13,8 @@
 				<table style="width:100%">
 					<tr>
 						<td style="padding-bottom: .5em;" class="text-muted">Dependencies</td>
-            <td ng-hide="$root.status.installed" style="text-align:right;padding-bottom: .5em;"><button type="button" style="width: 90px;" class="btn btn-{{installLabel}} btn-xs" data-toggle="modal" data-target="#dependenciesInstallModal" ng-disabled="processing">{{install}}</button></td>
-            <td ng-show="$root.status.installed" style="text-align:right;padding-bottom: .5em;"><button type="button" style="width: 90px;" class="btn btn-{{installLabel}} btn-xs" data-toggle="modal" data-target="#dependenciesRemoveModal" ng-disabled="processing">{{install}}</button></td>
+                        <td ng-hide="$root.status.installed" style="text-align:right;padding-bottom: .5em;"><button type="button" style="width: 90px;" class="btn btn-{{installLabel}} btn-xs" data-toggle="modal" data-target="#dependenciesInstallModal" ng-disabled="processing">{{install}}</button></td>
+                        <td ng-show="$root.status.installed" style="text-align:right;padding-bottom: .5em;"><button type="button" style="width: 90px;" class="btn btn-{{installLabel}} btn-xs" data-toggle="modal" data-target="#dependenciesRemoveModal" ng-disabled="processing">{{install}}</button></td>
 					</tr>
 					<tr ng-show="$root.status.installed">
 						<td style="padding-bottom: .5em;" class="text-muted">openvpn</td>
@@ -61,6 +61,24 @@
         </div>
       </div>
 
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<div class="panel panel-default" ng-show="$root.status.installed && $root.status.generated" ng-controller="openvpn_ConfigurationController">
+    <div class="panel-heading pointer" data-toggle="collapse" data-target="#Configuration">
+        <h4 class="panel-title">Configuration</h4>
+    </div>
+    <div id="Configuration" class="panel-collapse collapse">
+        <div class="panel-body">
+			<button type="submit" class="btn btn-{{saveConfigurationLabel}} btn-sm pull-right" ng-disabled="saving" ng-click="saveConfigurationData()">{{saveConfiguration}}</button><div class="clearfix"></div>
+			<form class="form-horizontal">
+                <textarea class="form-control" rows="20" ng-model="configurationData"></textarea>
+            </form>
         </div>
     </div>
 </div>
