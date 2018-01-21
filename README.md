@@ -8,18 +8,19 @@ module openvpn client for wifi pineapple
 │   ├── api
 │   │   └── module.php
 │   ├── files
-│   │   └── client.ovpn
+│   │   ├── client.ovpn
+│   │   └── creds.txt
 │   ├── js
 │   │   └── module.js
-│   ├── log
 │   ├── module.html
 │   ├── module.info
 │   ├── rules
 │   │   └── iptables
 │   └── scripts
+│       ├── autostart_openvpn.sh
 │       ├── dependencies.sh
 │       └── openvpn.sh
 └── README.md
 
-7 directories, 10 files
+6 directories, 12 files
 ```
