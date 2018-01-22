@@ -72,20 +72,23 @@
 
         </div>
 
-        <div class="col-sm-12 col-xs-12">
+        <div class="col-sm-12 col-xs-12" ng-controller="openvpn_InterfaceController">
             <div class="panel panel-default">
 
                 <div class="panel-heading">
-                    <h3 class="panel-title">
-                        Interface
+                    <h3 class="panel-title pull-left">
+                        Information
                     </h3>
+                    <button type="button" class="btn btn-primary pull-right btn-xs" ng-click="getInfo()">Refresh</button>
+                    <div class="clearfix"></div>
                 </div>
 
                 <div class="panel-body">
-                    Interface: Tun1<br>
-                    Local IP: 10.0.10.2<br>
-                    Gateway: 10.0.10.1<br>
-                    Public IP: 8.8.8.8
+                    Interface: {{ info.name }}<br>
+                    Local IP: {{ info.ip }}<br>
+                    Netmask: {{ info.subnet }}<br>
+                    Gateway: {{ info.gateway }}<br>
+                    Public IP: 8.8.8.8 <!-- {{ info.wanIpAddress }} -->
                 </div>
             </div>
         </div>
@@ -113,19 +116,20 @@
                     <div class="row" style="margin-bottom: 1.4em">
                         <div class="hidden-xs">
                             <div class="col-md-2" style="margin-top: 1.8em;">
-                                <button type="submit" class="btn btn-primary btn-block" ng-disabled="saving" ng-click="saveConfigurationCreds()">Save</button>
-
-
-
-
-                            </div>
+                                <button type="submit" class="btn btn-primary btn-block pull-left" ng-disabled="saving" ng-click="saveConfigurationCreds()">Save</button>
+                                
                                  <div class="pull-right">
-                                    Need credentials?
+                                    Need credentials
                                     <div class="btn-group">
                                         <button ng-click="toggleAutoRefresh()" class="btn btn-xs btn-{{refreshLabelON}}">ON</button>
                                         <button ng-click="toggleAutoRefresh()" class="btn btn-xs btn-{{refreshLabelOFF}}">OFF</button>
                                     </div>
                                 </div>
+
+
+
+                            </div>
+
                         </div>
                     </div>
 

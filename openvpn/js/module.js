@@ -303,3 +303,41 @@ registerController('openvpn_OutputController', ['$api', '$scope', '$rootScope', 
 		});
 
 }]);
+
+
+
+
+registerController('openvpn_InterfaceController', ['$api', '$scope', '$rootScope', '$filter', '$sce', function($api, $scope, $rootScope, $filter, $sce) {
+	$scope.info = {
+        name : "Loading...",
+        ip : "Loading...",
+        subnet : "Loading...",
+        gateway : "Loading...",
+		wanIpAddress : "Loading..."
+	};
+
+	$scope.title = "Loading...";
+	$scope.output = "Loading...";
+
+	$scope.loading = false;
+
+
+	$scope.getInfo = function() {
+			$scope.loading = true;
+
+			$api.request({
+					module: 'openvpn',
+					action: 'getInterfaces'
+			}, function(response) {
+					$scope.info = response.info;
+					$scope.loading = false;
+			});
+	};
+
+	$scope.getInfo();
+
+}]);
+
+
+
+

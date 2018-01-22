@@ -42,6 +42,9 @@ class openvpn extends Module
             case 'refreshOutput':
                 $this->refreshOutput();
                 break;
+            case 'getInterfaces':
+                $this->getInterfaces();
+                break;
         }
     }
     
@@ -246,6 +249,25 @@ class openvpn extends Module
 		{
 			$this->response = "openvpn is not installed...";
 		}
+    }
+    
+    private function getInterfaces()
+    {
+        $interface_name = exec("ifconfig | grep  'encap:UNSPEC'  | cut -d' ' -f1"); $interface_name = $interface_name != "" ? $interface_name : "-";
+        $ip_address = exec("ifconfig ".$interface_name." | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'"); $ip_address = $ip_address != "" ? $ip_address : "-";
+        $subnet_mask = exec("ifconfig ".$interface_name." | grep 'inet addr:' | cut -d: -f4 | awk '{ print $1}'"); $subnet_mask = $subnet_mask != "" ? $subnet_mask : "-";
+
+        $wan = @file_get_contents("http://cloud.wifipineapple.com/ip.php"); $wan = $wan != "" ? $wan : "-";
+        $gateway = exec("netstat -r | grep 'default' | grep ".$interface_name." | awk '{ print $2}'"); $gateway = $gateway != "" ? $gateway : "-";
+
+        $info = array( "name" => $interface_name,
+                       "ip" =>$ip_address,
+                       "subnet" => $subnet_mask,
+                       "gateway" => $gateway,
+                       'wanIpAddress' => $wan
+                      );
+
+        $this->response = array('info' => $info);
     }
   
 }
